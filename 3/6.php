@@ -60,7 +60,6 @@ echo "\n";
 $a = 5;
 $b = 4;
 echo '|a - b| = ', abs($a - $b), "\n";
-echo '|b - a| = ', abs($b - $a), "\n";
 
 $array = Array(1, 2, -1, -2, 3, -3);
 $array_new = array_map('abs', $array);
