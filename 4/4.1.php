@@ -1,12 +1,12 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['team'])) {
+if (!isset($_SESSION['teacher'])) {
     header('Location: 4.2.php');
     exit;
 }
 
-$team = $_SESSION['team'];
+$teacher = $_SESSION['teacher'];
 ?>
 
 <!DOCTYPE html>
@@ -17,9 +17,9 @@ $team = $_SESSION['team'];
 <body>
     <h2>Данные о преподавателе.</h2>
 
-    <p>Имя: <?= $team['name'] ?></p>
-    <p>Предмет: <?= $team['subject'] ?></p>
-    <p>Стаж: <?= $team['experience'] ?></p>
+    <p>Имя: <?= $teacher['name'] ?></p>
+    <p>Предмет: <?= $teacher['subject'] ?></p>
+    <p>Стаж: <?= $teacher['experience'] ?></p>
 
     <a href="4.2.php">Назад</a>
 </body>
