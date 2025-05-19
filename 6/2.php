@@ -1,53 +1,59 @@
 <?php
-function makeHttpCall($destination, $type = 'GET', $content = null, $extraHeaders = []) {
-    $session = curl_init($destination);
-    $settings = [CURLOPT_RETURNTRANSFER => true];
-
-    switch (strtoupper($type)) {
-        case 'POST':
-            $settings[CURLOPT_POST] = true;
-            break;
-        case 'PUT':
-        case 'DELETE':
-            $settings[CURLOPT_CUSTOMREQUEST] = $type;
-            break;
-    }
-
-    if ($content !== null) {
-        $processedContent = is_array($content) ? json_encode($content) : $content;
-        $settings[CURLOPT_POSTFIELDS] = $processedContent;
-        
-        if (is_array($content)) {
-            array_push($extraHeaders, 'Content-Type: application/json');
-        }
-    }
-
-    if (!empty($extraHeaders)) {
-        $settings[CURLOPT_HTTPHEADER] = $extraHeaders;
-    }
-
-    curl_setopt_array($session, $settings);
-    $result = curl_exec($session);
-    curl_close($session);
-    
-    return $result;
+// 1. GET с кастомными заголовками
+function getWithHeaders($url, $headers) {
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_RETURNTRANSFER => true
+    ]);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return json_decode($result, true);
 }
 
-echo "Custom Headers:\n";
-print_r(makeHttpCall(
-    'https://jsonplaceholder.typicode.com/posts/1',
-    'GET',
-    null,
-    ['X-Custom-Header: 123123', 'User-Agent: UserPuzer']
-)) . "\n\n";
+// 2. Отправка JSON данных
+function sendJson($url, $data) {
+    $curl = curl_init();
+    curl_setopt_array($curl, [
+        CURLOPT_URL => $url,
+        CURLOPT_POST => true,
+        CURLOPT_POSTFIELDS => json_encode($data),
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_RETURNTRANSFER => true
+    ]);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return json_decode($result, true);
+}
 
-echo "Отправка JSON:\n";
-print_r(makeHttpCall(
-    'https://jsonplaceholder.typicode.com/posts',
-    'POST',
-    ['title' => 'JSON Title', 'body' => 'With JSON', 'userId' => 42]
-)) . "\n\n";
+// 3. Запрос с параметрами URL
+function getWithParams($url, $params) {
+    $curl = curl_init($url . '?' . http_build_query($params));
+    curl_setopt_array($curl, [
+        CURLOPT_RETURNTRANSFER => true
+    ]);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return json_decode($result, true);
+}
 
-echo "GET c URL параметрами:\n";
-$query = http_build_query(['userId' => 1]);
-print_r(makeHttpCall("https://jsonplaceholder.typicode.com/posts?$query")) . "\n\n";
+
+echo "1. GET с заголовками:\n";
+print_r(getWithHeaders('https://jsonplaceholder.typicode.com/posts/1', [
+    'Authorization: Bearer 123',
+    'X-Custom-Header: test'
+]));
+
+echo "\n2. Отправка JSON:\n";
+print_r(sendJson('https://jsonplaceholder.typicode.com/posts', [
+    'title' => 'New Post',
+    'body' => 'Content',
+    'userId' => 1
+]));
+
+echo "\n3. GET с параметрами:\n";
+print_r(getWithParams('https://jsonplaceholder.typicode.com/posts', [
+    'userId' => 1,
+    '_limit' => 3
+]));
