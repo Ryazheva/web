@@ -35,9 +35,9 @@ $mysqli->close();
         Название: <input type="text" name="title"><br>
         Категория:
         <select name="category">
-            <option>Охота</option>
-            <option>Рыбалка</option>
-            <option>Туризм</option>
+            <option>Подарки</option>
+            <option>Сувениры</option>
+            <option>Handmade</option>
         </select><br>
         Описание: <label><textarea name="description"></textarea></label><br>
         <button>Отправить</button>
